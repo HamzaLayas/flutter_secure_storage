@@ -27,6 +27,9 @@ public class FlutterSecureStorageConfig {
     private static final String DEFAULT_STORAGE_CIPHER_ALGORITHM = "AES_GCM_NoPadding";
     private static final String DEFAULT_KEY_CIPHER_ALGORITHM = "RSA_ECB_OAEPwithSHA_256andMGF1Padding";
     private static final Boolean DEFAULT_BIOMETRIC_CONFIRMATION_REQUIRED = true;
+    public static final String LEGACY_ESP_RECOVERY_EMPTY_STORE_ONLY = "emptyStoreOnly";
+    public static final String LEGACY_ESP_RECOVERY_FILL_MISSING = "fillMissing";
+    public static final String LEGACY_ESP_RECOVERY_OFF = "off";
 
     public static final String PREF_OPTION_NAME = "sharedPreferencesName";
     public static final String PREF_OPTION_PREFIX = "preferencesKeyPrefix";
@@ -46,6 +49,7 @@ public class FlutterSecureStorageConfig {
     public static final String PREF_OPTION_KEY_CIPHER_ALGORITHM = "keyCipherAlgorithm";
     public static final String PREF_OPTION_STORAGE_NAMESPACE = "storageNamespace";
     public static final String PREF_OPTION_BIOMETRIC_CONFIRMATION_REQUIRED = "requireBiometricConfirmation";
+    public static final String PREF_OPTION_LEGACY_ESP_RECOVERY = "legacyEncryptedPrefsRecovery";
 
     private static final String TAG = "FlutterSecureStorageConfig";
 
@@ -65,6 +69,7 @@ public class FlutterSecureStorageConfig {
     private final String biometricPromptNegativeButton;
     private final String keyCipherAlgorithm;
     private final String storageCipherAlgorithm;
+    private final String legacyEncryptedPrefsRecovery;
     private final Map<String, Object> rawOptions;
 
     public FlutterSecureStorageConfig(Map<String, Object> options) {
@@ -98,6 +103,7 @@ public class FlutterSecureStorageConfig {
         this.biometricPromptNegativeButton = getStringOption(options, PREF_OPTION_BIOMETRIC_PROMPT_NEGATIVE_BUTTON, DEFAULT_BIOMETRIC_PROMPT_NEGATIVE_BUTTON);
         this.storageCipherAlgorithm = getStringOption(options, PREF_OPTION_STORAGE_CIPHER_ALGORITHM, DEFAULT_STORAGE_CIPHER_ALGORITHM);
         this.keyCipherAlgorithm = getStringOption(options, PREF_OPTION_KEY_CIPHER_ALGORITHM, DEFAULT_KEY_CIPHER_ALGORITHM);
+        this.legacyEncryptedPrefsRecovery = getStringOption(options, PREF_OPTION_LEGACY_ESP_RECOVERY, LEGACY_ESP_RECOVERY_EMPTY_STORE_ONLY);
 
         // Parse storageNamespace (empty string → null)
         String nsRaw = null;
@@ -167,6 +173,7 @@ public class FlutterSecureStorageConfig {
     public String getBiometricPromptNegativeButton() { return biometricPromptNegativeButton; }
     public String getPrefOptionStorageCipherAlgorithm() { return storageCipherAlgorithm; }
     public String getPrefOptionKeyCipherAlgorithm() { return keyCipherAlgorithm; }
+    public String getLegacyEncryptedPrefsRecovery() { return legacyEncryptedPrefsRecovery; }
 
     /** Returns the raw storageNamespace value, or null if not set. */
     @Nullable
