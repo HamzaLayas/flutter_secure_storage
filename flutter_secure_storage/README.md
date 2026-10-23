@@ -225,6 +225,25 @@ final storage = FlutterSecureStorage(
 - Supports all migration paths (non-biometric ↔ biometric, algorithm changes)
 - Automatic cleanup after successful migration
 
+#### Recovering `encryptedSharedPreferences` Data from Version 9
+
+Data written by version 9 with `encryptedSharedPreferences: true` is normally migrated by version 10. If an app went from version 9 straight to version 11, or version 10 skipped the migration ([#1293](https://github.com/juliansteenbakker/flutter_secure_storage/issues/1293)), that data is still on disk but reads return `null`. Version 11 recovers it the first time the storage is opened:
+
+```dart
+final storage = FlutterSecureStorage(
+  aOptions: AndroidOptions(
+    // Default. Use fillMissing or off to change it.
+    legacyEncryptedPrefsRecovery: LegacyEncryptedPrefsRecovery.emptyStoreOnly,
+  ),
+);
+```
+
+- `emptyStoreOnly` (default): recovers the data only while the current storage is still empty, i.e. on the first start after upgrading from version 9. Once the app has written its own data, the legacy data is left untouched.
+- `fillMissing`: copies every legacy key the current storage doesn't have. Keys the app deleted after upgrading come back from the legacy copy.
+- `off`: never reads legacy data.
+
+Values already in the current storage always win. Recovered entries are removed from the legacy store, and the recovery never creates keys: if the Android Keystore key that protected the data is gone (for example after a backup was restored to a new device), the data is left as is.
+
 ### iOS
 #### Biometric Authentication
 

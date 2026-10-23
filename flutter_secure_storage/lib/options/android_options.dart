@@ -31,6 +31,23 @@ enum AndroidBiometricType {
   biometricOrDeviceCredential,
 }
 
+/// What to do with data that v9 wrote with `encryptedSharedPreferences: true`
+/// and that was never migrated (v9 straight to v11, or the v10.3.2+ skip in
+/// issue #1293).
+enum LegacyEncryptedPrefsRecovery {
+  /// Copy the legacy data only while current storage is still empty, i.e. on
+  /// the first start after upgrading from v9. Once the app has written its
+  /// own data, legacy data is left untouched (default).
+  emptyStoreOnly,
+
+  /// Copy every legacy key that current storage doesn't have. Keys the app
+  /// deleted after upgrading come back from the legacy copy.
+  fillMissing,
+
+  /// Never read legacy data.
+  off,
+}
+
 /// Specific options for Android platform.
 class AndroidOptions extends Options {
   /// Standard secure storage using AES-GCM with RSA OAEP key wrapping.
@@ -60,6 +77,8 @@ class AndroidOptions extends Options {
     AndroidBiometricType biometricType =
         AndroidBiometricType.biometricOrDeviceCredential,
     bool requireBiometricConfirmation = true,
+    LegacyEncryptedPrefsRecovery legacyEncryptedPrefsRecovery =
+        LegacyEncryptedPrefsRecovery.emptyStoreOnly,
     this.preferencesKeyPrefix,
     this.storageNamespace,
     this.biometricPromptTitle,
@@ -73,7 +92,8 @@ class AndroidOptions extends Options {
        _keyCipherAlgorithm = keyCipherAlgorithm,
        _storageCipherAlgorithm = storageCipherAlgorithm,
        _biometricType = biometricType,
-       _requireBiometricConfirmation = requireBiometricConfirmation;
+       _requireBiometricConfirmation = requireBiometricConfirmation,
+       _legacyEncryptedPrefsRecovery = legacyEncryptedPrefsRecovery;
 
   /// Maximum security storage with optional biometric authentication.
   /// - Optionally requires biometric authentication
@@ -92,6 +112,8 @@ class AndroidOptions extends Options {
     AndroidBiometricType biometricType =
         AndroidBiometricType.biometricOrDeviceCredential,
     bool requireBiometricConfirmation = true,
+    LegacyEncryptedPrefsRecovery legacyEncryptedPrefsRecovery =
+        LegacyEncryptedPrefsRecovery.emptyStoreOnly,
     this.preferencesKeyPrefix,
     this.storageNamespace,
     this.biometricPromptTitle,
@@ -105,7 +127,8 @@ class AndroidOptions extends Options {
        _keyCipherAlgorithm = KeyCipherAlgorithm.AES_GCM_NoPadding,
        _storageCipherAlgorithm = StorageCipherAlgorithm.AES_GCM_NoPadding,
        _biometricType = biometricType,
-       _requireBiometricConfirmation = requireBiometricConfirmation;
+       _requireBiometricConfirmation = requireBiometricConfirmation,
+       _legacyEncryptedPrefsRecovery = legacyEncryptedPrefsRecovery;
 
   /// When an error is detected, automatically reset all data. This will prevent
   /// fatal errors regarding an unknown key however keep in mind that it will
@@ -186,6 +209,12 @@ class AndroidOptions extends Options {
   /// Defaults to true.
   final bool _requireBiometricConfirmation;
 
+  /// How to recover v9 EncryptedSharedPreferences data that was never
+  /// migrated. See [LegacyEncryptedPrefsRecovery].
+  ///
+  /// Defaults to [LegacyEncryptedPrefsRecovery.emptyStoreOnly].
+  final LegacyEncryptedPrefsRecovery _legacyEncryptedPrefsRecovery;
+
   /// The prefix for a shared preference key. The prefix is used to make sure
   /// the key is unique to your application. An underscore (_) is added to the
   /// end of the prefix automatically. If not provided, a default prefix will
@@ -239,6 +268,7 @@ class AndroidOptions extends Options {
     'storageCipherAlgorithm': _storageCipherAlgorithm.name,
     'biometricType': _biometricType.name,
     'requireBiometricConfirmation': '$_requireBiometricConfirmation',
+    'legacyEncryptedPrefsRecovery': _legacyEncryptedPrefsRecovery.name,
     'preferencesKeyPrefix': preferencesKeyPrefix ?? '',
     'storageNamespace': storageNamespace ?? '',
     'biometricPromptTitle': biometricPromptTitle ?? 'Authenticate to access',
@@ -258,6 +288,7 @@ class AndroidOptions extends Options {
     StorageCipherAlgorithm? storageCipherAlgorithm,
     AndroidBiometricType? biometricType,
     bool? requireBiometricConfirmation,
+    LegacyEncryptedPrefsRecovery? legacyEncryptedPrefsRecovery,
     String? preferencesKeyPrefix,
     String? storageNamespace,
     String? biometricPromptTitle,
@@ -276,6 +307,8 @@ class AndroidOptions extends Options {
     biometricType: biometricType ?? _biometricType,
     requireBiometricConfirmation:
         requireBiometricConfirmation ?? _requireBiometricConfirmation,
+    legacyEncryptedPrefsRecovery:
+        legacyEncryptedPrefsRecovery ?? _legacyEncryptedPrefsRecovery,
     preferencesKeyPrefix: preferencesKeyPrefix ?? this.preferencesKeyPrefix,
     storageNamespace: storageNamespace ?? this.storageNamespace,
     biometricPromptTitle: biometricPromptTitle ?? this.biometricPromptTitle,

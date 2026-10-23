@@ -381,6 +381,7 @@ void main() {
         'storageCipherAlgorithm': 'AES_GCM_NoPadding',
         'biometricType': 'biometricOrDeviceCredential',
         'requireBiometricConfirmation': 'true',
+        'legacyEncryptedPrefsRecovery': 'emptyStoreOnly',
         'preferencesKeyPrefix': '',
         'storageNamespace': '',
         'biometricPromptTitle': 'Authenticate to access',
@@ -420,6 +421,7 @@ void main() {
         'storageCipherAlgorithm': 'AES_GCM_NoPadding',
         'biometricType': 'biometricOrDeviceCredential',
         'requireBiometricConfirmation': 'true',
+        'legacyEncryptedPrefsRecovery': 'emptyStoreOnly',
         'preferencesKeyPrefix': 'customPrefix',
         'storageNamespace': 'customPrefs',
         'biometricPromptTitle': 'Custom Title',
@@ -443,6 +445,7 @@ void main() {
           'storageCipherAlgorithm': 'AES_GCM_NoPadding',
           'biometricType': 'biometricOrDeviceCredential',
           'requireBiometricConfirmation': 'true',
+          'legacyEncryptedPrefsRecovery': 'emptyStoreOnly',
           'preferencesKeyPrefix': '',
           'storageNamespace': '',
           'biometricPromptTitle': 'Authenticate to access',
@@ -470,6 +473,7 @@ void main() {
         'storageCipherAlgorithm': 'AES_GCM_NoPadding',
         'biometricType': 'biometricOrDeviceCredential',
         'requireBiometricConfirmation': 'true',
+        'legacyEncryptedPrefsRecovery': 'emptyStoreOnly',
         'preferencesKeyPrefix': '',
         'storageNamespace': '',
         'biometricPromptTitle': 'Unlock Secure Storage',
@@ -538,6 +542,7 @@ void main() {
         'storageCipherAlgorithm': 'AES_GCM_NoPadding',
         'biometricType': 'biometricOrDeviceCredential',
         'requireBiometricConfirmation': 'true',
+        'legacyEncryptedPrefsRecovery': 'emptyStoreOnly',
         'preferencesKeyPrefix': 'newPrefix',
         'storageNamespace': 'newPrefs',
         'biometricPromptTitle': 'New Title',
@@ -639,6 +644,27 @@ void main() {
 
       expect(options.toMap()['migrateOnAlgorithmChange'], 'false');
       expect(options.toMap()['resetOnError'], 'true');
+    });
+
+    test('AndroidOptions legacyEncryptedPrefsRecovery can be set', () {
+      const options = AndroidOptions(
+        legacyEncryptedPrefsRecovery: LegacyEncryptedPrefsRecovery.fillMissing,
+      );
+
+      expect(options.toMap()['legacyEncryptedPrefsRecovery'], 'fillMissing');
+    });
+
+    test('copyWith overrides legacyEncryptedPrefsRecovery', () {
+      const original = AndroidOptions.defaultOptions;
+      final copied = original.copyWith(
+        legacyEncryptedPrefsRecovery: LegacyEncryptedPrefsRecovery.off,
+      );
+
+      expect(copied.toMap()['legacyEncryptedPrefsRecovery'], 'off');
+      expect(
+        original.toMap()['legacyEncryptedPrefsRecovery'],
+        'emptyStoreOnly',
+      );
     });
 
     test('AndroidOptions migrateWithBackup default is false', () {

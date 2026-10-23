@@ -275,6 +275,9 @@ public class FlutterSecureStorage {
         initializeStorageCipher(configSource, new SecurePreferencesCallback<>() {
             @Override
             public void onSuccess(Void unused) {
+                // Recover v9 EncryptedSharedPreferences data that v10 didn't migrate (#1293).
+                LegacyEncryptedPrefsMigration.migrateIfNeeded(context, config, dataPreferences,
+                        configSource, storageCipher);
                 preferences = dataPreferences;
                 callback.onSuccess(null);
             }
